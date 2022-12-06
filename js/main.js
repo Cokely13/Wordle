@@ -95,6 +95,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function handleDeleteLetter() {
+    const currentWordArr = getCurrentWordArr()
+    const removedLetter = currentWordArr.pop()
+
+    guessedWords[guessedWords.length - 1] = currentWordArr
+
+    const lastLetterEl = document.getElementById(String(availableSpace - 1))
+    lastLetterEl.textContent = ''
+    availableSpace = availableSpace -1
+  }
+
   for ( let i = 0; i < keys.length; i++) {
     keys[i].onclick = ({ target }) => {
     const letter = target.getAttribute("data-key")
@@ -104,6 +115,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    if ( letter === 'del') {
+      handleDeleteLetter()
+      return
+    }
 
     updateGuessedWords(letter)
       console.log("working")
