@@ -4,16 +4,11 @@ document.addEventListener("DOMContentLoaded", () => {
   let guessedWords = [[]]
   let availableSpace = 1
 
+  let word = "dairy"
+  let guessedWordCount = 0
+
   const keys = document.querySelectorAll('.keyboard-row button');
 
-  for ( let i = 0; i < keys.length; i++) {
-    keys[i].onclick = ({ target }) => {
-    const letter = target.getAttribute("data-key")
-
-    updateGuessedWords(letter)
-      console.log("working")
-    }
-  }
 
   function getCurrentWordArr() {
     const numberOfGuessedWords = guessedWords.length
@@ -26,11 +21,65 @@ document.addEventListener("DOMContentLoaded", () => {
     if (currentWordArr && currentWordArr.length < 5) {
       currentWordArr.push(letter)
 
-      const availableSpaceEl = document.getElementById(String(1))
+      const availableSpaceEl = document.getElementById(String(availableSpace))
       availableSpace = availableSpace +1
 
       availableSpaceEl.textContent = letter
     }
+  }
+
+  function getTileColor(letter, index) {
+    const isCorrectLetter = word.includes(letter)
+
+    if (!isCorrectLetter) {
+      return "rgb(58, 58, 60)"
+    }
+
+    const letterInPosition = word.charAt(index)
+    const isCorrectPosition = letter === letterInPosition
+
+    if (isCorrectPosition) {
+      return "rgb(83, 141, 78)"
+    }
+
+    return "rgb(181, 159, 59)"
+
+  }
+
+
+  function handleSubmitWord() {
+    const currentWordArr = getCurrentWordArr()
+    if (currentWordArr.length !== 5) {
+      window.alert("word must be 5 letters!")
+    }
+
+    const currentWord = currentWordArr.join('')
+
+
+    const firstLetterId = guessedWordCount * 5 + 1;
+    const interval = 200;
+    currentWordArr.forEach((letter, index) => {
+      setTimeout(() => {
+        const tileColor = getTileColor(letter, index)
+        const letterId = firstLetterId + index;
+        const letterEl = document.getElementById(letterId)
+        letterEl.classList.add("animate__flipInX")
+        letterEl.style = `background-color: ${tileColor}; border-color: ${tileColor}`
+
+      }, interval * index)
+    })
+
+    guessedWordCount += 1
+
+    if (currentWord === word) {
+     window.alert("Congrats you got it!")
+    }
+
+    if (guessedWords.length === 6) {
+      window.alert(`Sorry the word was ${word}`)
+    }
+
+    guessedWords.push([])
   }
 
   function createSquares() {
@@ -39,9 +88,26 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let index = 0; index <30; index++) {
       let square = document.createElement("div")
       square.classList.add("square")
+      square.classList.add("animate__animated")
       square.setAttribute("id", index + 1)
       gameBoard.appendChild(square)
 
     }
   }
+
+  for ( let i = 0; i < keys.length; i++) {
+    keys[i].onclick = ({ target }) => {
+    const letter = target.getAttribute("data-key")
+
+    if (letter === 'enter') {
+      handleSubmitWord()
+      return;
+    }
+
+
+    updateGuessedWords(letter)
+      console.log("working")
+    }
+  }
+
 })
